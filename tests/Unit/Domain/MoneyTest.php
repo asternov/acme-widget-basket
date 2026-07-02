@@ -23,12 +23,14 @@ final class MoneyTest extends TestCase
         $this->assertSame('0.00', (string) Money::zero());
     }
 
-    public function test_adds_and_multiplies(): void
+    public function test_adds(): void
     {
-        $money = Money::fromCents(1000)->add(Money::fromCents(295));
+        $this->assertSame('12.95', (string) Money::fromCents(1000)->add(Money::fromCents(295)));
+    }
 
-        $this->assertSame('12.95', (string) $money);
-        $this->assertSame('25.90', (string) $money->multiply(2));
+    public function test_multiplies(): void
+    {
+        $this->assertSame('25.90', (string) Money::fromCents(1295)->multiply(2));
     }
 
     public function test_halves_without_losing_the_half_cent(): void

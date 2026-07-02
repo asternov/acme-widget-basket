@@ -105,8 +105,12 @@ final class BasketApiTest extends TestCase
 
     public function test_rejects_items_that_are_not_a_list_of_codes(): void
     {
-        $response = $this->postJson('/api/basket/total', ['items' => 'R01']);
+        $this->postJson('/api/basket/total', ['items' => 'R01'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('items');
 
-        $response->assertUnprocessable()->assertJsonValidationErrors('items');
+        $this->postJson('/api/basket/total', ['items' => ['first' => 'R01']])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('items');
     }
 }
