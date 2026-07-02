@@ -47,10 +47,9 @@ final class Basket
             $discounted = $discounted->subtract($offer->discount($this->quantities, $this->catalogue));
         }
 
-        // Sub-cent remainders are truncated in the customer's favour; the
-        // coupon then applies to the goods total, and the delivery tier is
-        // chosen from what the customer actually pays. The truncation and
-        // tier rules are derived from the spec examples.
+        // Sub-cent remainders are truncated in the customer's favour; this
+        // truncate-then-coupon-then-delivery ordering is derived from the
+        // spec examples.
         $goods = $discounted->truncateToCent();
         $couponDiscount = $coupon?->discount($goods) ?? Money::zero();
         $payable = $goods->subtract($couponDiscount);

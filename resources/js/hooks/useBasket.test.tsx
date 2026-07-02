@@ -90,7 +90,7 @@ describe('useBasket', () => {
         expect(lastTotalsBody(stub).items).toEqual(['R01', 'B01']);
     });
 
-    it('keeps a catalogue error visible after a successful repricing', async () => {
+    it('keeps the catalogue error visible when pricing succeeds', async () => {
         stubFetch((url) =>
             url === '/api/products'
                 ? jsonResponse({ message: 'boom' }, 500)

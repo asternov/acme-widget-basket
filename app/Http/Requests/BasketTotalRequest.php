@@ -23,7 +23,7 @@ final class BasketTotalRequest extends FormRequest
         );
 
         return [
-            'items' => ['present', 'array'],
+            'items' => ['present', 'list'],
             'items.*' => ['string', Rule::in($codes)],
             'coupon' => ['sometimes', 'nullable', 'string', Rule::in($coupons->codes())],
         ];

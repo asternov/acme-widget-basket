@@ -1,6 +1,8 @@
 import { Product, Totals } from '../types';
 import { CouponField } from './CouponField';
 
+const isZero = (amount: string) => amount === '0.00';
+
 interface Props {
     items: string[];
     products: Product[];
@@ -71,11 +73,11 @@ export function BasketSummary({
                     </div>
                     <div>
                         <dt>Discount</dt>
-                        <dd className={totals.discount !== '0.00' ? 'basket__discount' : ''}>
-                            {totals.discount !== '0.00' ? `−$${totals.discount}` : '$0.00'}
+                        <dd className={isZero(totals.discount) ? '' : 'basket__discount'}>
+                            {isZero(totals.discount) ? '$0.00' : `−$${totals.discount}`}
                         </dd>
                     </div>
-                    {totals.coupon_discount !== '0.00' && (
+                    {!isZero(totals.coupon_discount) && (
                         <div>
                             <dt>Coupon</dt>
                             <dd className="basket__discount">−${totals.coupon_discount}</dd>
@@ -84,7 +86,7 @@ export function BasketSummary({
                     <div>
                         <dt>Delivery</dt>
                         <dd>
-                            {totals.subtotal !== '0.00' && totals.delivery === '0.00'
+                            {!isZero(totals.subtotal) && isZero(totals.delivery)
                                 ? 'Free'
                                 : `$${totals.delivery}`}
                         </dd>

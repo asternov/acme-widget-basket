@@ -9,12 +9,16 @@ const PRODUCTS = [
 ];
 
 describe('ProductList', () => {
-    it('renders a card per product and reports adds by product code', async () => {
-        const onAdd = vi.fn();
-        render(<ProductList products={PRODUCTS} onAdd={onAdd} />);
+    it('renders a card per product with its price', () => {
+        render(<ProductList products={PRODUCTS} onAdd={vi.fn()} />);
 
         expect(screen.getByText('$32.95')).toBeInTheDocument();
         expect(screen.getByText('$24.95')).toBeInTheDocument();
+    });
+
+    it('reports adds by product code', async () => {
+        const onAdd = vi.fn();
+        render(<ProductList products={PRODUCTS} onAdd={onAdd} />);
 
         await userEvent.click(screen.getByRole('button', { name: 'Add Green Widget to basket' }));
 

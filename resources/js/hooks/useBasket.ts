@@ -21,7 +21,8 @@ export function useBasket() {
             .then(setProducts)
             .catch((cause: unknown) => {
                 if (!controller.signal.aborted) {
-                    setCatalogueError(`Could not load the product catalogue. ${String(cause)}`);
+                    console.error(cause);
+                    setCatalogueError('Could not load the product catalogue.');
                 }
             });
 
@@ -52,7 +53,8 @@ export function useBasket() {
                     return;
                 }
 
-                setPricingError(`Could not price the basket. ${String(cause)}`);
+                console.error(cause);
+                setPricingError('Could not price the basket.');
             });
 
         return () => controller.abort();

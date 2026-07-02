@@ -69,7 +69,7 @@ describe('BasketSummary', () => {
     it('dims the breakdown while a repricing request is in flight', () => {
         renderSummary({ isPricing: true });
 
-        expect(screen.getByRole('heading', { name: 'Basket' }).closest('aside')?.querySelector('dl')).toHaveAttribute(
+        expect(screen.getByRole('complementary', { name: 'Basket' }).querySelector('[aria-busy]')).toHaveAttribute(
             'aria-busy',
             'true',
         );

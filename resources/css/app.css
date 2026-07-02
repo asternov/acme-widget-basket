@@ -164,7 +164,8 @@ button:hover {
     color: var(--muted);
 }
 
-.basket__lines button {
+.basket__lines button,
+.coupon--applied button {
     padding: 4px 10px;
     background: transparent;
     border: 1px solid var(--line);
@@ -172,7 +173,8 @@ button:hover {
     font-size: 13px;
 }
 
-.basket__lines button:hover {
+.basket__lines button:hover,
+.coupon--applied button:hover {
     border-color: var(--muted);
     background: transparent;
     color: var(--ink);
@@ -228,20 +230,6 @@ button:hover {
     align-items: center;
     gap: 12px;
     font-size: 14px;
-}
-
-.coupon--applied button {
-    padding: 4px 10px;
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.coupon--applied button:hover {
-    border-color: var(--muted);
-    background: transparent;
-    color: var(--ink);
 }
 
 .basket__totals {
