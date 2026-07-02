@@ -53,9 +53,33 @@ final class BasketApiTest extends TestCase
         $response->assertOk()->assertExactJson([
             'subtotal' => '65.90',
             'discount' => '16.48',
+            'coupon_discount' => '0.00',
             'delivery' => '4.95',
             'total' => '54.37',
         ]);
+    }
+
+    public function test_applies_a_coupon_and_reprices_delivery_from_the_payable_amount(): void
+    {
+        $response = $this->postJson('/api/basket/total', [
+            'items' => ['B01', 'B01', 'R01', 'R01', 'R01'],
+            'coupon' => 'WIDGET10',
+        ]);
+
+        $response->assertOk()->assertExactJson([
+            'subtotal' => '114.75',
+            'discount' => '16.48',
+            'coupon_discount' => '9.82',
+            'delivery' => '2.95',
+            'total' => '91.40',
+        ]);
+    }
+
+    public function test_rejects_an_unknown_coupon_code(): void
+    {
+        $response = $this->postJson('/api/basket/total', ['items' => ['R01'], 'coupon' => 'NOPE']);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('coupon');
     }
 
     public function test_prices_an_empty_basket_at_zero(): void
