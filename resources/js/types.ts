@@ -7,6 +7,7 @@ export interface Product {
 export interface Totals {
     subtotal: string;
     discount: string;
+    coupon_discount: string;
     delivery: string;
     total: string;
 }

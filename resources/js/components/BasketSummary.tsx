@@ -1,13 +1,29 @@
 import { Product, Totals } from '../types';
+import { CouponField } from './CouponField';
 
 interface Props {
     items: string[];
     products: Product[];
     totals: Totals | null;
+    isPricing: boolean;
+    coupon: string | null;
+    couponError: string | null;
     onRemove: (code: string) => void;
+    onApplyCoupon: (code: string) => void;
+    onRemoveCoupon: () => void;
 }
 
-export function BasketSummary({ items, products, totals, onRemove }: Props) {
+export function BasketSummary({
+    items,
+    products,
+    totals,
+    isPricing,
+    coupon,
+    couponError,
+    onRemove,
+    onApplyCoupon,
+    onRemoveCoupon,
+}: Props) {
     const lines = products
         .map((product) => ({
             product,
@@ -40,8 +56,15 @@ export function BasketSummary({ items, products, totals, onRemove }: Props) {
                 </ul>
             )}
 
+            {lines.length > 0 && (
+                <CouponField coupon={coupon} error={couponError} onApply={onApplyCoupon} onRemove={onRemoveCoupon} />
+            )}
+
             {totals && (
-                <dl className="basket__totals">
+                <dl
+                    className={isPricing ? 'basket__totals basket__totals--pricing' : 'basket__totals'}
+                    aria-busy={isPricing}
+                >
                     <div>
                         <dt>Subtotal</dt>
                         <dd>${totals.subtotal}</dd>
@@ -52,6 +75,12 @@ export function BasketSummary({ items, products, totals, onRemove }: Props) {
                             {totals.discount !== '0.00' ? `−$${totals.discount}` : '$0.00'}
                         </dd>
                     </div>
+                    {totals.coupon_discount !== '0.00' && (
+                        <div>
+                            <dt>Coupon</dt>
+                            <dd className="basket__discount">−${totals.coupon_discount}</dd>
+                        </div>
+                    )}
                     <div>
                         <dt>Delivery</dt>
                         <dd>
