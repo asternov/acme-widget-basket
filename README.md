@@ -25,13 +25,15 @@ alongside `php artisan serve` instead of `npm run build`.
 ## Tests
 
 ```
-vendor/bin/phpunit
+vendor/bin/phpunit     # backend: domain + API
+npm test               # frontend: vitest + Testing Library
 npm run typecheck
 ```
 
 The four example baskets from the brief are covered twice: as domain unit tests
 (`tests/Unit/Domain/BasketTest.php`) and through the HTTP API
-(`tests/Feature/BasketApiTest.php`).
+(`tests/Feature/BasketApiTest.php`). The React side is covered by component and
+hook tests next to the code they test (`resources/js/**/*.test.tsx`).
 
 ## How it works
 
@@ -48,14 +50,18 @@ All pricing logic lives in a framework-free domain layer under
   "from this subtotal, delivery costs X" tiers.
 - `Offer` + `BuyOneGetSecondHalfPrice` — offers are pluggable strategies; the
   red widget offer is one implementation, parameterised by product code.
+- `PercentageCoupon` + `Coupons` — coupon codes (`WIDGET10`, `ACME20`) applied
+  on top of offers. The discount is floored to a whole cent, and the delivery
+  tier is re-evaluated from what the customer actually pays after the coupon.
 
 The catalogue, delivery tiers and active offers are configuration
 (`config/acme.php`), not code. `AppServiceProvider` wires them into the domain,
 and the HTTP layer is two thin endpoints:
 
 - `GET /api/products` — the catalogue for the UI.
-- `POST /api/basket/total` — prices a list of product codes and returns the
-  breakdown. Product codes are validated against the catalogue (422 otherwise).
+- `POST /api/basket/total` — prices a list of product codes (plus an optional
+  coupon code) and returns the breakdown. Product and coupon codes are
+  validated against the configuration (422 otherwise).
 
 The React app (`resources/js`) keeps no pricing knowledge at all: it sends the
 chosen product codes to the API and renders whatever comes back.
@@ -78,7 +84,12 @@ So the rules are:
 3. Pick the delivery tier from that truncated goods total.
 
 The discount shown in the breakdown is defined as `subtotal − goods total`, so
-the displayed columns always reconcile: subtotal − discount + delivery = total.
+the displayed columns always reconcile:
+subtotal − discount − coupon + delivery = total.
+
+Coupons follow the same discipline: the percentage is taken from the
+cent-precise goods total and floored to a whole cent, so a "10% off" coupon
+never takes off more than 10%.
 
 ## Assumptions
 
@@ -88,7 +99,26 @@ the displayed columns always reconcile: subtotal − discount + delivery = total
 - "Amount spent" for the delivery tiers means the discounted goods total, as
   confirmed by the `R01, R01` example (49.42 → $4.95 delivery).
 - An empty basket prices at $0.00 and ships nothing.
+- A coupon applies after product offers, and delivery is charged on the amount
+  the customer actually pays — so a coupon can bring a basket back under a
+  delivery threshold.
 - The pricing API is stateless: the client sends product codes, the server
   prices them. A real sales system would persist baskets, but that adds nothing
   to a pricing proof of concept.
 - Prices are single-currency dollar amounts, as in the brief.
+
+## Production notes
+
+Things this proof of concept deliberately leaves out, and what they would look
+like in a real sales system:
+
+- **Orders and idempotency.** Checkout would be a `POST /api/orders` that
+  persists the priced basket and accepts an `Idempotency-Key`, storing and
+  replaying the first result so a retried request can never charge twice.
+- **Payment webhooks.** Provider notifications would be verified against a
+  signature, deduplicated by event id (a unique constraint, not check-then-act),
+  and processed inside one database transaction — payment providers routinely
+  retry the same notification for hours.
+- **Multi-party money.** Once affiliates or revenue splits enter the picture,
+  every order fans out into several ledger entries; the integer-money and
+  explicit-rounding discipline in `Money` is what keeps those splits adding up.
