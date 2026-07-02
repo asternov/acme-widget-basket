@@ -19,7 +19,7 @@ final class TieredDelivery implements DeliveryPolicy
         usort($tiers, fn (array $a, array $b): int => $a['from_cents'] <=> $b['from_cents']);
 
         if ($tiers === [] || $tiers[0]['from_cents'] !== 0) {
-            throw new InvalidArgumentException('Delivery tiers must start at a zero subtotal.');
+            throw new InvalidArgumentException('Delivery tiers must start at zero.');
         }
 
         foreach ($tiers as $tier) {
@@ -30,12 +30,12 @@ final class TieredDelivery implements DeliveryPolicy
         }
     }
 
-    public function cost(Money $subtotal): Money
+    public function cost(Money $amountPayable): Money
     {
         $cost = Money::zero();
 
         foreach ($this->tiers as $tier) {
-            if ($subtotal->isAtLeast($tier['from'])) {
+            if ($amountPayable->isAtLeast($tier['from'])) {
                 $cost = $tier['cost'];
             }
         }

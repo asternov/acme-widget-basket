@@ -12,10 +12,10 @@ use PHPUnit\Framework\TestCase;
 
 final class TieredDeliveryTest extends TestCase
 {
-    #[DataProvider('subtotals')]
-    public function test_charges_the_tier_matching_the_subtotal(int $subtotalCents, string $expectedCost): void
+    #[DataProvider('payableAmounts')]
+    public function test_charges_the_tier_matching_the_amount_payable(int $payableCents, string $expectedCost): void
     {
-        $cost = $this->policy()->cost(Money::fromCents($subtotalCents));
+        $cost = $this->policy()->cost(Money::fromCents($payableCents));
 
         $this->assertSame($expectedCost, (string) $cost);
     }
@@ -23,7 +23,7 @@ final class TieredDeliveryTest extends TestCase
     /**
      * @return array<string, array{int, string}>
      */
-    public static function subtotals(): array
+    public static function payableAmounts(): array
     {
         return [
             'small order' => [1000, '4.95'],
@@ -46,7 +46,7 @@ final class TieredDeliveryTest extends TestCase
         $this->assertSame('2.95', (string) $policy->cost(Money::fromCents(6000)));
     }
 
-    public function test_rejects_tiers_that_leave_small_subtotals_unpriced(): void
+    public function test_rejects_tiers_that_leave_small_amounts_unpriced(): void
     {
         $this->expectException(InvalidArgumentException::class);
 

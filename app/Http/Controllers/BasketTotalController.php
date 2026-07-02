@@ -17,8 +17,8 @@ final class BasketTotalController
             $basket->add($code);
         }
 
-        $code = $request->couponCode();
-        $totals = $basket->totals($code === null ? null : $coupons->find($code));
+        $couponCode = $request->couponCode();
+        $totals = $basket->totals($couponCode === null ? null : $coupons->find($couponCode));
 
         return new JsonResponse([
             'subtotal' => (string) $totals->subtotal,

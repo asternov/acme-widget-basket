@@ -47,7 +47,7 @@ All pricing logic lives in a framework-free domain layer under
 - `Money` — exact monetary amounts stored as an integer number of half cents.
   No floats touch money anywhere in the codebase.
 - `TieredDelivery` — the delivery charge rules as data: a list of
-  "from this subtotal, delivery costs X" tiers.
+  "from this payable amount, delivery costs X" tiers.
 - `Offer` + `BuyOneGetSecondHalfPrice` — offers are pluggable strategies; the
   red widget offer is one implementation, parameterised by product code.
 - `PercentageCoupon` + `Coupons` — coupon codes (`WIDGET10`, `ACME20`) applied

@@ -6,5 +6,5 @@ namespace App\Domain\Basket;
 
 interface DeliveryPolicy
 {
-    public function cost(Money $subtotal): Money;
+    public function cost(Money $amountPayable): Money;
 }
