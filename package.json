@@ -5,16 +5,22 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+        "test": "vitest run",
         "typecheck": "tsc"
     },
     "devDependencies": {
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@testing-library/user-event": "^14.6.1",
         "@types/react": "^19.2.7",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^5.1.0",
         "concurrently": "^9.0.1",
+        "jsdom": "^29.1.1",
         "laravel-vite-plugin": "^3.1",
         "typescript": "^5.9.3",
-        "vite": "^8.0.0"
+        "vite": "^8.0.0",
+        "vitest": "^4.1.9"
     },
     "dependencies": {
         "react": "^19.2.3",
