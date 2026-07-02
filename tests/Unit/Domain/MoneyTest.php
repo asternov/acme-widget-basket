@@ -66,6 +66,21 @@ final class MoneyTest extends TestCase
         $this->assertTrue($money->truncateToCent()->equals($money));
     }
 
+    public function test_takes_a_percentage_floored_to_a_whole_cent(): void
+    {
+        $this->assertSame('9.82', (string) Money::fromCents(9827)->percent(10));
+        $this->assertSame('1.19', (string) Money::fromCents(795)->percent(15));
+        $this->assertSame('0.00', (string) Money::fromCents(9827)->percent(0));
+        $this->assertSame('98.27', (string) Money::fromCents(9827)->percent(100));
+    }
+
+    public function test_rejects_percentages_outside_zero_to_one_hundred(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Money::fromCents(1000)->percent(101);
+    }
+
     public function test_compares_amounts(): void
     {
         $this->assertTrue(Money::fromCents(9000)->isAtLeast(Money::fromCents(9000)));

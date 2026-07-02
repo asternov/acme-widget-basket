@@ -63,6 +63,15 @@ final class Money
         return new self($this->halfCents - $this->halfCents % 2);
     }
 
+    public function percent(int $percent): self
+    {
+        if ($percent < 0 || $percent > 100) {
+            throw new InvalidArgumentException('Percentage must be between 0 and 100.');
+        }
+
+        return self::fromCents(intdiv($this->cents() * $percent, 100));
+    }
+
     public function isAtLeast(self $other): bool
     {
         return $this->halfCents >= $other->halfCents;

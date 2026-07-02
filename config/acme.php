@@ -19,4 +19,9 @@ return [
         ['type' => 'buy_one_get_second_half_price', 'product' => 'R01'],
     ],
 
+    'coupons' => [
+        ['code' => 'WIDGET10', 'percent_off' => 10],
+        ['code' => 'ACME20', 'percent_off' => 20],
+    ],
+
 ];

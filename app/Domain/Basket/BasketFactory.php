@@ -43,6 +43,20 @@ final class BasketFactory
     }
 
     /**
+     * @param list<array{code: string, percent_off: int}> $coupons
+     */
+    public static function coupons(array $coupons): Coupons
+    {
+        return new Coupons(array_map(
+            fn (array $coupon): PercentageCoupon => new PercentageCoupon(
+                $coupon['code'],
+                $coupon['percent_off'],
+            ),
+            $coupons,
+        ));
+    }
+
+    /**
      * @param list<array<string, string>> $offers
      *
      * @return list<Offer>

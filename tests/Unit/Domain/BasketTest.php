@@ -8,6 +8,7 @@ use App\Domain\Basket\Basket;
 use App\Domain\Basket\BuyOneGetSecondHalfPrice;
 use App\Domain\Basket\Catalogue;
 use App\Domain\Basket\Money;
+use App\Domain\Basket\PercentageCoupon;
 use App\Domain\Basket\Product;
 use App\Domain\Basket\TieredDelivery;
 use App\Domain\Basket\UnknownProduct;
@@ -124,6 +125,37 @@ final class BasketTest extends TestCase
         $this->assertSame('131.80', (string) $totals->subtotal);
         $this->assertSame('32.95', (string) $totals->discount);
         $this->assertSame('98.85', (string) $totals->total);
+    }
+
+    public function test_a_coupon_discounts_the_goods_and_can_bring_back_a_delivery_charge(): void
+    {
+        $basket = $this->basket();
+        foreach (['B01', 'B01', 'R01', 'R01', 'R01'] as $code) {
+            $basket->add($code);
+        }
+
+        $totals = $basket->totals(new PercentageCoupon('WIDGET10', 10));
+
+        $this->assertSame('114.75', (string) $totals->subtotal);
+        $this->assertSame('16.48', (string) $totals->discount);
+        $this->assertSame('9.82', (string) $totals->couponDiscount);
+        $this->assertSame('2.95', (string) $totals->delivery);
+        $this->assertSame('91.40', (string) $totals->total);
+        $this->assertTrue(
+            $totals->subtotal
+                ->subtract($totals->discount)
+                ->subtract($totals->couponDiscount)
+                ->add($totals->delivery)
+                ->equals($totals->total),
+        );
+    }
+
+    public function test_without_a_coupon_the_coupon_discount_is_zero(): void
+    {
+        $basket = $this->basket();
+        $basket->add('B01');
+
+        $this->assertSame('0.00', (string) $basket->totals()->couponDiscount);
     }
 
     private function basket(): Basket

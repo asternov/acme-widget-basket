@@ -31,10 +31,10 @@ final class Basket
         return $this->totals()->total;
     }
 
-    public function totals(): BasketTotals
+    public function totals(?PercentageCoupon $coupon = null): BasketTotals
     {
         if ($this->quantities === []) {
-            return new BasketTotals(Money::zero(), Money::zero(), Money::zero(), Money::zero());
+            return new BasketTotals(Money::zero(), Money::zero(), Money::zero(), Money::zero(), Money::zero());
         }
 
         $subtotal = Money::zero();
@@ -48,16 +48,20 @@ final class Basket
         }
 
         // Sub-cent remainders are truncated in the customer's favour; the
-        // delivery tier is then chosen from what the customer actually pays
-        // for the goods. Both rules are derived from the spec examples.
+        // coupon then applies to the goods total, and the delivery tier is
+        // chosen from what the customer actually pays. The truncation and
+        // tier rules are derived from the spec examples.
         $goods = $discounted->truncateToCent();
-        $delivery = $this->deliveryPolicy->cost($goods);
+        $couponDiscount = $coupon?->discount($goods) ?? Money::zero();
+        $payable = $goods->subtract($couponDiscount);
+        $delivery = $this->deliveryPolicy->cost($payable);
 
         return new BasketTotals(
             subtotal: $subtotal,
             discount: $subtotal->subtract($goods),
+            couponDiscount: $couponDiscount,
             delivery: $delivery,
-            total: $goods->add($delivery),
+            total: $payable->add($delivery),
         );
     }
 }
